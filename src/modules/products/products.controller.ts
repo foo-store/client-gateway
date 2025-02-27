@@ -13,19 +13,23 @@ export class ProductsController {
 
   @Get()
   getProducts(@Query() paginationDto: PaginationDto) {
-    return this.clientProxy.send('product.list', paginationDto).pipe(
-      catchError((error) => {
-        throw new RpcException(error);
-      }),
-    );
+    return this.clientProxy
+      .send<string, PaginationDto>('product.list', paginationDto)
+      .pipe(
+        catchError((error) => {
+          throw new RpcException(error);
+        }),
+      );
   }
 
   @Post()
   create(@Body() createProductDto: CreateProductDto) {
-    return this.clientProxy.send('product.create', createProductDto).pipe(
-      catchError((error) => {
-        throw new RpcException(error);
-      }),
-    );
+    return this.clientProxy
+      .send<string, CreateProductDto>('product.create', createProductDto)
+      .pipe(
+        catchError((error) => {
+          throw new RpcException(error);
+        }),
+      );
   }
 }
