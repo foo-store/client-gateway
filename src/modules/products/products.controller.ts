@@ -9,7 +9,7 @@ import { CreateProductDto } from './dto';
 export class ProductsController {
   constructor(
     @Inject(NATS_SERVICE) private readonly clientProxy: ClientProxy,
-  ) { }
+  ) {}
 
   @Get()
   getProducts(@Query() paginationDto: PaginationDto) {
@@ -26,6 +26,6 @@ export class ProductsController {
       catchError((error) => {
         throw new RpcException(error);
       }),
-    )
+    );
   }
 }
