@@ -1,8 +1,9 @@
-import { Controller, Get, Inject, Query } from '@nestjs/common';
+import { Body, Controller, Get, Inject, Post, Query } from '@nestjs/common';
 import { ClientProxy, RpcException } from '@nestjs/microservices';
 import { catchError } from 'rxjs';
 import { NATS_SERVICE } from 'src/common/constants';
 import { PaginationDto } from 'src/common/dto';
+import { CreateProductDto } from './dto';
 
 @Controller('products')
 export class ProductsController {
@@ -17,5 +18,14 @@ export class ProductsController {
         throw new RpcException(error);
       }),
     );
+  }
+
+  @Post()
+  create(@Body() createProductDto: CreateProductDto) {
+    return this.clientProxy.send('create-product', createProductDto).pipe(
+      catchError((error) => {
+        throw new RpcException(error);
+      }),
+    )
   }
 }
