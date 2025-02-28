@@ -1,4 +1,11 @@
-import { Body, Controller, Inject, Post, UseGuards } from '@nestjs/common';
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Inject,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import { ClientProxy, RpcException } from '@nestjs/microservices';
 import { catchError } from 'rxjs';
 import { NATS_SERVICE } from 'src/common/constants';
@@ -16,15 +23,14 @@ export class OrdersController {
   @Post()
   @UseGuards(AuthGuard)
   create(@GetUser() user: User, @Body() createOrderDto: CreateOrderDto) {
-    console.log(user);
     return this.clientProxy
       .send<string, { userId: string } & CreateOrderDto>('order.create', {
         userId: user.id,
         ...createOrderDto,
       })
       .pipe(
-        catchError((error) => {
-          throw new RpcException(error);
+        catchError((error: RpcException) => {
+          throw new BadRequestException(error.message);
         }),
       );
   }
