@@ -21,13 +21,15 @@ export class RpcCustomExceptionFilter implements ExceptionFilter {
       'status' in rpcError &&
       'message' in rpcError
     ) {
-      const status = rpcError.status as any;
-      const httpStatus = isNaN(+status) ? 400 : +status;
+      const status = rpcError.status as string | number;
+      const httpStatus = isNaN(+status)
+        ? HttpStatus.INTERNAL_SERVER_ERROR
+        : +status;
       return res.status(httpStatus).json(rpcError);
     }
 
-    return res.status(HttpStatus.BAD_REQUEST).json({
-      status: HttpStatus.BAD_REQUEST,
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
       error: rpcError,
     });
   }

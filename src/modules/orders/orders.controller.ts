@@ -2,8 +2,10 @@ import {
   BadRequestException,
   Body,
   Controller,
+  Get,
   Inject,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { ClientProxy, RpcException } from '@nestjs/microservices';
@@ -13,6 +15,7 @@ import { GetUser } from '../auth/decorators';
 import { AuthGuard } from '../auth/guards';
 import { User } from '../auth/interfaces';
 import { CreateOrderDto } from './dto/create-order.dto';
+import { OrderStatusDto } from './dto/order-status.dto';
 
 @Controller('orders')
 export class OrdersController {
@@ -29,8 +32,20 @@ export class OrdersController {
         ...createOrderDto,
       })
       .pipe(
-        catchError((error: RpcException) => {
-          throw new BadRequestException(error.message);
+        catchError((error) => {
+          throw new RpcException(error.message);
+        }),
+      );
+  }
+
+  @Get()
+  @UseGuards(AuthGuard)
+  listFiltered(@Query() orderStatusDto: OrderStatusDto) {
+    return this.clientProxy
+      .send<string, OrderStatusDto>('order.list-filtered', orderStatusDto)
+      .pipe(
+        catchError((error) => {
+          throw new RpcException(error.message);
         }),
       );
   }
